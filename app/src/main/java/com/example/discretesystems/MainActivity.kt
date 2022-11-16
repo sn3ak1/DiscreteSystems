@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
@@ -42,9 +43,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    var handler: Handler = Handler()
+    var runnable: Runnable? = null
+    var delay = 1000
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestMultiplePermissions.launch(arrayOf(
@@ -79,7 +85,10 @@ class MainActivity : AppCompatActivity() {
 
         val buttonScan = findViewById<Button>(R.id.button_scan)
         buttonScan.setOnClickListener{
+        }
 
+        handler.postDelayed(Runnable {
+            handler.postDelayed(runnable!!, delay.toLong())
             bleInstance.scan(object : BleScanCallback() {
                 override fun onScanStarted(success: Boolean) {}
                 override fun onScanning(bleDevice: BleDevice) {
@@ -91,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
                         db.collection("OcleanX")
                             .document(System.currentTimeMillis().toString()).
-                                set(instance)
+                            set(instance)
 //                            .add(instance)
 //                            .addOnSuccessListener { documentReference ->
 //                                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
@@ -112,7 +121,8 @@ class MainActivity : AppCompatActivity() {
                     list.removeAll { true }
                 }
             })
-        }
+        }.also { runnable = it }, delay.toLong())
+
     }
     private fun checkPermissions() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
