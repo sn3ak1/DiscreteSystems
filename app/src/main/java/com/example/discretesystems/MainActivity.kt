@@ -2,6 +2,7 @@ package com.example.discretesystems
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -18,6 +19,10 @@ import com.clj.fastble.BleManager
 import com.clj.fastble.callback.BleScanCallback
 import com.clj.fastble.data.BleDevice
 import com.clj.fastble.scan.BleScanRuleConfig
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.type.DateTime
+import java.util.Date
 
 
 class MainActivity : AppCompatActivity() {
@@ -67,16 +72,6 @@ class MainActivity : AppCompatActivity() {
 
         bleInstance.enableBluetooth()
         bleInstance.enableLog(true)
-
-//        val scanRuleConfig = BleScanRuleConfig.Builder()
-//            .setServiceUuids(null)
-//            .setDeviceName(true, "names")
-//            .setAutoConnect(false)
-//            .setScanTimeOut(10000)
-//            .build()
-//
-//        bleInstance.initScanRule(scanRuleConfig)
-
         var list  = mutableListOf<BleDevice>()
 
         checkPermissions()
@@ -88,12 +83,29 @@ class MainActivity : AppCompatActivity() {
             bleInstance.scan(object : BleScanCallback() {
                 override fun onScanStarted(success: Boolean) {}
                 override fun onScanning(bleDevice: BleDevice) {
+                    val db = Firebase.firestore
+                    if(bleDevice.name == "Oclean X"){
+                        val instance = hashMapOf(
+                            "value" to bleDevice.rssi,
+                        )
+
+                        db.collection("OcleanX")
+                            .document(System.currentTimeMillis().toString()).
+                                set(instance)
+//                            .add(instance)
+//                            .addOnSuccessListener { documentReference ->
+//                                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+//                            }
+//                            .addOnFailureListener { e ->
+//                                Log.w(TAG, "Error adding document", e)
+//                            }
+                    }
                     list.add(bleDevice)
                 }
                 override fun onScanFinished(scanResultList: List<BleDevice>) {
                     var ss = "test\n"
                     for (x in list){
-                        var s = x.name + " " + x.rssi + "\n"
+                        val s = x.name + " " + x.rssi + "\n"
                         ss += s
                     }
                     findViewById<TextView>(R.id.textView).text = ss
