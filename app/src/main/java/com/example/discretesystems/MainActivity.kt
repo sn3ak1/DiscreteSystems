@@ -113,13 +113,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-
-
-        val buttonBeacon = findViewById<Button>(R.id.button_beacon)
-        buttonBeacon.setOnClickListener{
-
-        }
-
     }
     private fun checkPermissions() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -146,5 +139,4 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
 }
