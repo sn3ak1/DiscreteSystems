@@ -24,6 +24,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.type.DateTime
 import java.util.Date
+import kotlin.math.pow
 
 
 class MainActivity : AppCompatActivity() {
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
         bleInstance.enableBluetooth()
         bleInstance.enableLog(true)
-        var list  = mutableListOf<BleDevice>()
+        val list  = mutableListOf<BleDevice>()
 
         checkPermissions()
 
@@ -94,27 +95,22 @@ class MainActivity : AppCompatActivity() {
                     if(bleDevice.name == "Oclean X" && !seen_already){
                         val instance = hashMapOf(
                             "value" to bleDevice.rssi,
-                            "beaconID" to "John"
+                            "beaconID" to "Gosiaa",
+                            "meters" to (10.0).pow(((-69.0 -(bleDevice.rssi))/(10.0 * 2.0)))
                         )
                         seen_already = true
 
                         db.collection("OcleanX")
                         .document(System.currentTimeMillis().toString()).
                         set(instance)
-//                            .add(instance)
-//                            .addOnSuccessListener { documentReference ->
-//                                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-//                            }
-//                            .addOnFailureListener { e ->
-//                                Log.w(TAG, "Error adding document", e)
-//                            }
+//
                     }
                     list.add(bleDevice)
                 }
                 override fun onScanFinished(scanResultList: List<BleDevice>) {
                     var ss = "test\n"
                     for (x in list){
-                        val s = x.name + " " + x.rssi + "\n"
+                        val s = x.name + " " + x.rssi + "   " + (10.0).pow(((-69.0 -(x.rssi))/(10.0 * 2.0))) +"\n"
                         ss += s
                     }
                     findViewById<TextView>(R.id.textView).text = ss
@@ -140,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                 permissionDeniedList.add(permission)
             }
         }
-        if (!permissionDeniedList.isEmpty()) {
+        if (permissionDeniedList.isNotEmpty()) {
             val deniedPermissions = permissionDeniedList.toTypedArray()
             ActivityCompat.requestPermissions(
                 this,
