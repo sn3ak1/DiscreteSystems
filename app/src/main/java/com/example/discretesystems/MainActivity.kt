@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -83,42 +84,47 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-        handler.postDelayed(Runnable {
-            handler.postDelayed(runnable!!, delay.toLong())
+        val button = findViewById<Button>(R.id.button)
 
-            val db = Firebase.firestore
-            var seen_already: Boolean = false
+        button.setOnClickListener{
+            handler.postDelayed(Runnable {
+                handler.postDelayed(runnable!!, delay.toLong())
 
-            bleInstance.scan(object : BleScanCallback() {
-                override fun onScanStarted(success: Boolean) {}
-                override fun onScanning(bleDevice: BleDevice) {
-                    if(bleDevice.name == "Oclean X" && !seen_already){
-                        val instance = hashMapOf(
-                            "value" to bleDevice.rssi,
-                            "beaconID" to "Gosiaa",
-                            "meters" to (10.0).pow(((-69.0 -(bleDevice.rssi))/(10.0 * 2.0)))
-                        )
-                        seen_already = true
+                val db = Firebase.firestore
+                var seen_already: Boolean = false
 
-                        db.collection("OcleanX")
-                        .document(System.currentTimeMillis().toString()).
-                        set(instance)
+                bleInstance.scan(object : BleScanCallback() {
+                    override fun onScanStarted(success: Boolean) {}
+                    override fun onScanning(bleDevice: BleDevice) {
+                        if((bleDevice.name == findViewById<EditText>(R.id.trackDeviceName).text.toString()) && !seen_already){
+                            val instance = hashMapOf(
+                                "value" to bleDevice.rssi,
+                                "beaconID" to findViewById<EditText>(R.id.referenceBeacon).text.toString(),
+                                "meters" to (10.0).pow(((-69.0 -(bleDevice.rssi))/(10.0 * 2.0))),
+                                "neighbour1" to findViewById<EditText>(R.id.editTextTextPersonName3).text.toString(),
+                                "neighbour2" to findViewById<EditText>(R.id.editTextTextPersonName4).text.toString(),
+                            )
+                            seen_already = true
+
+                            db.collection(findViewById<EditText>(R.id.trackDeviceName ).text.toString())
+                                .document(System.currentTimeMillis().toString()).
+                                set(instance)
 //
+                        }
+                        list.add(bleDevice)
                     }
-                    list.add(bleDevice)
-                }
-                override fun onScanFinished(scanResultList: List<BleDevice>) {
-                    var ss = "test\n"
-                    for (x in list){
-                        val s = x.name + " " + x.rssi + "   " + (10.0).pow(((-69.0 -(x.rssi))/(10.0 * 2.0))) +"\n"
-                        ss += s
+                    override fun onScanFinished(scanResultList: List<BleDevice>) {
+                        var ss = "test\n"
+                        for (x in list){
+                            val s = x.name + " " + x.rssi + "   " + (10.0).pow(((-69.0 -(x.rssi))/(10.0 * 2.0))) +"\n"
+                            ss += s
+                        }
+                        findViewById<TextView>(R.id.textView).text = ss
+                        list.removeAll { true }
                     }
-                    findViewById<TextView>(R.id.textView).text = ss
-                    list.removeAll { true }
-                }
-            })
-        }.also { runnable = it }, delay.toLong())
-
+                })
+            }.also { runnable = it }, delay.toLong())
+        }
     }
     private fun checkPermissions() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
