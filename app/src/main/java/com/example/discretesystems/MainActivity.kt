@@ -82,25 +82,25 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-
-        val buttonScan = findViewById<Button>(R.id.button_scan)
-        buttonScan.setOnClickListener{
-        }
-
         handler.postDelayed(Runnable {
             handler.postDelayed(runnable!!, delay.toLong())
+
+            val db = Firebase.firestore
+            var seen_already: Boolean = false
+
             bleInstance.scan(object : BleScanCallback() {
                 override fun onScanStarted(success: Boolean) {}
                 override fun onScanning(bleDevice: BleDevice) {
-                    val db = Firebase.firestore
-                    if(bleDevice.name == "Oclean X"){
+                    if(bleDevice.name == "Oclean X" && !seen_already){
                         val instance = hashMapOf(
                             "value" to bleDevice.rssi,
+                            "beaconID" to "John"
                         )
+                        seen_already = true
 
                         db.collection("OcleanX")
-                            .document(System.currentTimeMillis().toString()).
-                            set(instance)
+                        .document(System.currentTimeMillis().toString()).
+                        set(instance)
 //                            .add(instance)
 //                            .addOnSuccessListener { documentReference ->
 //                                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
