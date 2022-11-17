@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                             val instance = hashMapOf(
                                 "value" to bleDevice.rssi,
                                 "beaconID" to findViewById<EditText>(R.id.referenceBeacon).text.toString(),
-                                "time" to System.currentTimeMillis().toString().toString(),
+                                "time" to System.currentTimeMillis().toString(),
                                 "meters" to (10.0).pow(((-69.0 -(bleDevice.rssi))/(10.0 * 2.0))),
                                 "neighbour1" to findViewById<EditText>(R.id.editTextTextPersonName3).text.toString(),
                                 "neighbour2" to findViewById<EditText>(R.id.editTextTextPersonName4).text.toString(),
