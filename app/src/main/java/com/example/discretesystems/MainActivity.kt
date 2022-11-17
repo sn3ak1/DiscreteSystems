@@ -23,7 +23,6 @@ import com.clj.fastble.data.BleDevice
 import com.clj.fastble.scan.BleScanRuleConfig
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.type.DateTime
 import java.util.Date
 import kotlin.math.pow
 
@@ -100,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                             val instance = hashMapOf(
                                 "value" to bleDevice.rssi,
                                 "beaconID" to findViewById<EditText>(R.id.referenceBeacon).text.toString(),
+                                "time" to System.currentTimeMillis().toString().toString(),
                                 "meters" to (10.0).pow(((-69.0 -(bleDevice.rssi))/(10.0 * 2.0))),
                                 "neighbour1" to findViewById<EditText>(R.id.editTextTextPersonName3).text.toString(),
                                 "neighbour2" to findViewById<EditText>(R.id.editTextTextPersonName4).text.toString(),
