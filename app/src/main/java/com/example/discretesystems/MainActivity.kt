@@ -96,13 +96,15 @@ class MainActivity : AppCompatActivity() {
                     override fun onScanStarted(success: Boolean) {}
                     override fun onScanning(bleDevice: BleDevice) {
                         if((bleDevice.name == findViewById<EditText>(R.id.trackDeviceName).text.toString()) && !seen_already){
+                            val Tx_idx = 30
+                            val device_Tx_val = bleDevice.getScanRecord()[Tx_idx]
                             val instance = hashMapOf(
                                 "value" to bleDevice.rssi,
                                 "beaconID" to findViewById<EditText>(R.id.referenceBeacon).text.toString(),
                                 "time" to System.currentTimeMillis().toString(),
-                                "meters" to (10.0).pow(((-69.0 -(bleDevice.rssi))/(10.0 * 2.0))),
+                                "meters" to (10.0).pow(((device_Tx_val -(bleDevice.rssi))/(10.0 * 2.0))),
                                 "y" to findViewById<EditText>(R.id.editTextTextPersonName3).text.toString(),
-                                "x" to findViewById<EditText>(R.id.editTextTextPersonName4).text.toString(),
+                                "x" to findViewById<EditText>(R.id.editTextTextPersonName4).text.toString()
                             )
                             seen_already = true
 
