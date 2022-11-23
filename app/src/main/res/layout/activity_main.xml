@@ -31,62 +31,71 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="44dp"
-        android:text="Button"
+        android:text="Activate Beacon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/trackDeviceName"
-        android:layout_width="213dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="45dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Oclean X"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
         android:id="@+id/referenceBeacon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="48dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         android:text="Gosia"
-        app:layout_constraintBottom_toTopOf="@+id/trackDeviceName"
+        app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
-        android:layout_width="223dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="56dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="y"
-        app:layout_constraintBottom_toTopOf="@+id/referenceBeacon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.542"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName4"
+        android:id="@+id/xBeaconCoordinate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="42dp"
+        android:layout_marginBottom="24dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:text="x"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName3"
+        android:inputType="numberDecimal"
+        android:text="0.0"
+        app:layout_constraintBottom_toTopOf="@+id/yBeaconCoordinate"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/xBeaconLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X: (m)"
+        app:layout_constraintBottom_toTopOf="@+id/yBeaconLabel"
+        app:layout_constraintEnd_toStartOf="@+id/xBeaconCoordinate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.887" />
+
+    <TextView
+        android:id="@+id/yBeaconLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Y: (m)"
+        app:layout_constraintEnd_toStartOf="@+id/yBeaconCoordinate"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="456dp" />
+
+    <EditText
+        android:id="@+id/yBeaconCoordinate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:text="0.0"
+        app:layout_constraintBottom_toTopOf="@+id/referenceBeacon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

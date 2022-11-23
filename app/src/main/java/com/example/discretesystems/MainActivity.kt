@@ -79,8 +79,27 @@ class MainActivity : AppCompatActivity() {
 
         bleInstance.enableBluetooth()
         bleInstance.enableLog(true)
-        val list  = mutableListOf<BleDevice>()
+//        val list  = mutableListOf<BleDevice>()
 
+        class TrackableBLEDevice constructor(
+            value_rssi: Int = 0,
+            beaconID: String = "",
+            foundName: String = "",
+            time: Long = 0,
+            meters: Double = 0.0,
+            x: Double = 0.0,
+            y: Double = 0.0
+        ) {
+            val value_rssi: Int = value_rssi
+            val beaconID: String = beaconID
+            val foundName: String = foundName
+            val time: Long = time
+            val meters: Double = meters
+            val x: Double = x
+            val y: Double = y
+        }
+
+        val foundDevices = mutableListOf<TrackableBLEDevice>()
         checkPermissions()
 
         val button = findViewById<Button>(R.id.button)
@@ -90,39 +109,54 @@ class MainActivity : AppCompatActivity() {
                 handler.postDelayed(runnable!!, delay.toLong())
 
                 val db = Firebase.firestore
-                var seen_already: Boolean = false
+                var seenDeviceNames : MutableList<String> = ArrayList()
 
                 bleInstance.scan(object : BleScanCallback() {
                     override fun onScanStarted(success: Boolean) {}
                     override fun onScanning(bleDevice: BleDevice) {
-                        if((bleDevice.name == findViewById<EditText>(R.id.trackDeviceName).text.toString()) && !seen_already){
-                            val Tx_idx = 30
+                        if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null){
+                            val Tx_idx = 30 // The device trasmition power is on a 30th bit in ScanRecord array
                             val device_Tx_val = bleDevice.getScanRecord()[Tx_idx]
-                            val instance = hashMapOf(
-                                "value" to bleDevice.rssi,
-                                "beaconID" to findViewById<EditText>(R.id.referenceBeacon).text.toString(),
-                                "time" to System.currentTimeMillis().toString(),
-                                "meters" to (10.0).pow(((device_Tx_val -(bleDevice.rssi))/(10.0 * 2.0))),
-                                "y" to findViewById<EditText>(R.id.editTextTextPersonName3).text.toString(),
-                                "x" to findViewById<EditText>(R.id.editTextTextPersonName4).text.toString()
+                            val currTime: Long = System.currentTimeMillis();
+                            val rssi_to_meters: Double = (10.0).pow(((-device_Tx_val -(bleDevice.rssi))/(10.0 * 2.0)))
+                            var currDevice: TrackableBLEDevice = TrackableBLEDevice(
+                                value_rssi = bleDevice.rssi,
+                                beaconID = findViewById<EditText>(R.id.referenceBeacon).text.toString(),
+                                foundName = bleDevice.name,
+                                time =  currTime,
+                                meters = rssi_to_meters,
+                                x = findViewById<EditText>(R.id.yBeaconCoordinate).text.toString().toDouble(),
+                                y = findViewById<EditText>(R.id.xBeaconCoordinate).text.toString().toDouble()
                             )
-                            seen_already = true
+                            foundDevices.add(currDevice)
+                            val instance = hashMapOf(
+                                "value" to currDevice.value_rssi,
+                                "beaconID" to currDevice.beaconID,
+                                "time" to currDevice.time.toString(),
+                                "meters" to currDevice.meters,
+                                "y" to currDevice.y.toString(),
+                                "x" to currDevice.x.toString()
+                            )
 
-                            db.collection(findViewById<EditText>(R.id.trackDeviceName ).text.toString())
-                                .document(System.currentTimeMillis().toString()).
+                            seenDeviceNames.add(bleDevice.name)
+
+                            db.collection(bleDevice.name)
+                                .document(currTime.toString()).
                                 set(instance)
 //
                         }
-                        list.add(bleDevice)
+//                        list.add(bleDevice)
                     }
                     override fun onScanFinished(scanResultList: List<BleDevice>) {
-                        var ss = "test\n"
-                        for (x in list){
-                            val s = x.name + " " + x.rssi + "   " + (10.0).pow(((-69.0 -(x.rssi))/(10.0 * 2.0))) +"\n"
-                            ss += s
+                        var debugInfo = "test | ---- | ---- | ---- | ---- | ---- | ----\n"
+                        for (currBLEDevice in foundDevices){
+                            val slug = "ID: " + currBLEDevice.foundName + " || RSSI: " + currBLEDevice.value_rssi.toString() + " || DISTANCE (m): " + currBLEDevice.meters.toString() +"\n"
+                            debugInfo += slug
                         }
-                        findViewById<TextView>(R.id.textView).text = ss
-                        list.removeAll { true }
+                        findViewById<TextView>(R.id.textView).text = debugInfo
+//                        list.removeAll { true }
+                        foundDevices.removeAll { true }
+                        seenDeviceNames.removeAll { true }
                     }
                 })
             }.also { runnable = it }, delay.toLong())
