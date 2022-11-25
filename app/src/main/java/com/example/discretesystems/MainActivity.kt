@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
                             val rssi_to_meters: Double = (10.0).pow(((
                                         -69.0 -(bleDevice.rssi))
-                                        /(10.0 * 3.0)
+                                        /(10.0 * 2.0)
                                     )
                             )
                             var currDevice: TrackableBLEDevice = TrackableBLEDevice(
