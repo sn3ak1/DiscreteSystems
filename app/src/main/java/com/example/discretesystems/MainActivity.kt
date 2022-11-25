@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         fun getSignalFalloff(rssi: Int): Double {
             var signalFalloff = 3.0
             when (rssi) {
-                in -50..-60 -> signalFalloff = 1.5
+                in 0..-60 -> signalFalloff = 1.5
                 in -60..-70 -> signalFalloff = 2.0
                 in -70..-80 -> signalFalloff = 2.5
                 in -80..-90 -> signalFalloff = 3.0
