@@ -138,9 +138,9 @@ class MainActivity : AppCompatActivity() {
                                 "x" to currDevice.x.toString()
                             )
 
-                            seenDeviceNames.add(bleDevice.name)
+                            seenDeviceNames.add(currDevice.beaconID)
 
-                            db.collection(bleDevice.name)
+                            db.collection(currDevice.beaconID)
                                 .document(currTime.toString()).
                                 set(instance)
 //
