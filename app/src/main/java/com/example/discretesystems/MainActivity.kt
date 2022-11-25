@@ -25,6 +25,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Date
 import kotlin.math.pow
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -117,11 +120,11 @@ class MainActivity : AppCompatActivity() {
                         if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null){
                             val Tx_idx = 10 // The device trasmition power is on a 10th bit in ScanRecord array
                             val device_Tx_val: Int = bleDevice.getScanRecord()[Tx_idx].toInt()
-                            val currTime: Long = System.currentTimeMillis();
+                            val currTime: Long = System.currentTimeMillis()
 
                             val rssi_to_meters: Double = (10.0).pow(((
                                         -69.0 -(bleDevice.rssi))
-                                        /(10.0 * 2.0)
+                                        /(10.0 * 3.0)
                                     )
                             )
                             var currDevice: TrackableBLEDevice = TrackableBLEDevice(
@@ -145,7 +148,7 @@ class MainActivity : AppCompatActivity() {
 
                             seenDeviceNames.add(bleDevice.name)
 
-                            db.collection(bleDevice.name)
+                            db.collection(bleDevice.name + " | " + (currTime / 3600000).toInt().toString())
                                 .document(currTime.toString()).
                                 set(instance)
 //
