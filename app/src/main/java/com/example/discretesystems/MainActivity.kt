@@ -84,6 +84,21 @@ class MainActivity : AppCompatActivity() {
         bleInstance.enableLog(true)
 //        val list  = mutableListOf<BleDevice>()
 
+        fun getSignalFalloff(rssi: Int): Double {
+            var signalFalloff = 3.0
+            when (rssi) {
+                in -50..-60 -> signalFalloff = 1.5
+                in -60..-70 -> signalFalloff = 2.0
+                in -70..-80 -> signalFalloff = 2.5
+                in -80..-90 -> signalFalloff = 3.0
+                in -90..-95 -> signalFalloff = 3.5
+                else -> {
+                    signalFalloff = 6.0
+                }
+            }
+            return signalFalloff
+        }
+
         class TrackableBLEDevice constructor(
             value_rssi: Int = 0,
             beaconID: String = "",
@@ -124,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
                             val rssi_to_meters: Double = (10.0).pow(((
                                         -69.0 -(bleDevice.rssi))
-                                        /(10.0 * 3.0)
+                                        /(10.0 * getSignalFalloff(bleDevice.rssi))
                                     )
                             )
                             var currDevice: TrackableBLEDevice = TrackableBLEDevice(
