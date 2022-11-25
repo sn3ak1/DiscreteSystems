@@ -115,10 +115,15 @@ class MainActivity : AppCompatActivity() {
                     override fun onScanStarted(success: Boolean) {}
                     override fun onScanning(bleDevice: BleDevice) {
                         if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null){
-                            val Tx_idx = 30 // The device trasmition power is on a 30th bit in ScanRecord array
-                            val device_Tx_val = bleDevice.getScanRecord()[Tx_idx]
+                            val Tx_idx = 10 // The device trasmition power is on a 10th bit in ScanRecord array
+                            val device_Tx_val: Int = bleDevice.getScanRecord()[Tx_idx].toInt()
                             val currTime: Long = System.currentTimeMillis();
-                            val rssi_to_meters: Double = (10.0).pow(((-device_Tx_val -(bleDevice.rssi))/(10.0 * 2.0)))
+
+                            val rssi_to_meters: Double = (10.0).pow(((
+                                        -69.0 -(bleDevice.rssi))
+                                        /(10.0 * 2.0)
+                                    )
+                            )
                             var currDevice: TrackableBLEDevice = TrackableBLEDevice(
                                 value_rssi = bleDevice.rssi,
                                 beaconID = findViewById<EditText>(R.id.referenceBeacon).text.toString(),
@@ -148,9 +153,11 @@ class MainActivity : AppCompatActivity() {
 //                        list.add(bleDevice)
                     }
                     override fun onScanFinished(scanResultList: List<BleDevice>) {
-                        var debugInfo = "test | ---- | ---- | ---- | ---- | ---- | ----\n"
+                        var debugInfo = "test | ID:      | RSSI:      | DISTANCE (m):      \n"
                         for (currBLEDevice in foundDevices){
-                            val slug = "ID: " + currBLEDevice.foundName + " || RSSI: " + currBLEDevice.value_rssi.toString() + " || DISTANCE (m): " + currBLEDevice.meters.toString() +"\n"
+                            val slug = "ID: " + currBLEDevice.foundName +
+                                    " || RSSI: " + currBLEDevice.value_rssi.toString() +
+                                    " || DISTANCE (m): " + currBLEDevice.meters.toString() +"\n"
                             debugInfo += slug
                         }
                         findViewById<TextView>(R.id.textView).text = debugInfo
