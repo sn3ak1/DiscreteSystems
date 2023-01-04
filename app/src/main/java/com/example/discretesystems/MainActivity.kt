@@ -2,9 +2,11 @@ package com.example.discretesystems
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.le.ScanRecord
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -21,6 +23,8 @@ import com.clj.fastble.BleManager
 import com.clj.fastble.callback.BleScanCallback
 import com.clj.fastble.data.BleDevice
 import com.clj.fastble.scan.BleScanRuleConfig
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Date
@@ -50,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     var handler: Handler = Handler()
     var runnable: Runnable? = null
     var delay = 1000
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -65,6 +69,22 @@ class MainActivity : AppCompatActivity() {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             requestBluetooth.launch(enableBtIntent)
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null
+                Log.d("aaaa",location.toString())
+            }
 
         var beaconMac = ""
 
@@ -118,12 +138,12 @@ class MainActivity : AppCompatActivity() {
                     override fun onScanStarted(success: Boolean) {}
                     override fun onScanning(bleDevice: BleDevice) {
                         if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null){
-                            val Tx_idx = 10 // The device trasmition power is on a 10th bit in ScanRecord array
+                            val Tx_idx = 29 // The device trasmition power is on a 10th bit in ScanRecord array
                             val device_Tx_val: Int = bleDevice.getScanRecord()[Tx_idx].toInt()
                             val currTime: Long = System.currentTimeMillis()
 
                             val rssi_to_meters: Double = (10.0).pow(((
-                                        -69.0 -(bleDevice.rssi))
+                                        -Tx_idx -(bleDevice.rssi))
                                         /(10.0 * 3.0)
                                     )
                             )
