@@ -86,14 +86,17 @@ class MainActivity : AppCompatActivity() {
 
         class TrackableBLEDevice constructor(
             value_rssi: Int = 0,
+            roomID: String = "",
             beaconID: String = "",
             foundName: String = "",
             time: Long = 0,
             meters: Double = 0.0,
             x: Double = 0.0,
-            y: Double = 0.0
+            y: Double = 0.0,
+            Tx: Int = 0,
         ) {
             val value_rssi: Int = value_rssi
+            val roomID: String = roomID
             val beaconID: String = beaconID
             val foundName: String = foundName
             val time: Long = time
@@ -129,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                             )
                             var currDevice: TrackableBLEDevice = TrackableBLEDevice(
                                 value_rssi = bleDevice.rssi,
+                                roomID = findViewById<EditText>(R.id.roomId).text.toString(),
                                 beaconID = findViewById<EditText>(R.id.referenceBeacon).text.toString(),
                                 foundName = bleDevice.name,
                                 time =  currTime,
@@ -139,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                             foundDevices.add(currDevice)
                             val instance = hashMapOf(
                                 "value" to currDevice.value_rssi,
+                                "roomID" to currDevice.roomID,
                                 "beaconID" to currDevice.beaconID,
                                 "time" to currDevice.time.toString(),
                                 "meters" to currDevice.meters,
