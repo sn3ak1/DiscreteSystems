@@ -192,6 +192,21 @@ class MainActivity : AppCompatActivity() {
                             db.collection("Devices").document("Bluetooth").collection(bleDevice.name + " | " + (currTime / 3600000).toInt().toString())
                                 .document(currTime.toString()).
                                 set(instance)
+
+                            db.collection("Devices").document("Bluetooth").get().addOnSuccessListener { document ->
+                                if (document != null) {                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+
+                                    val devices = document.get("devices") as ArrayList<String>
+                                    if (!devices.contains(bleDevice.name )) {
+                                        devices.add(bleDevice.name )
+                                        db.collection("Devices").document("Bluetooth").update("devices", devices)
+                                    }
+                                } else {
+                                    Log.d(TAG, "No such document")
+                                }
+                            }.addOnFailureListener { exception ->
+                                Log.d(TAG, "get failed with ", exception)
+                            }
 //
                         }
 //                        list.add(bleDevice)
