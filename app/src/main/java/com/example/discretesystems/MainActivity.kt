@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
 
                             seenDeviceNames.add(bleDevice.name)
 
-                            db.collection(bleDevice.name + " | " + (currTime / 3600000).toInt().toString())
+                            db.collection("Devices").document("Bluetooth").collection(bleDevice.name + " | " + (currTime / 3600000).toInt().toString())
                                 .document(currTime.toString()).
                                 set(instance)
 //
