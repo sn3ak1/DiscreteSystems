@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
                             foundDevices.add(currDevice)
                             val instance = hashMapOf(
                                 "value" to currDevice.value_rssi,
-                                "gps" to false,
+//                                "gps" to false,
                                 "roomID" to currDevice.roomID,
                                 "beaconID" to currDevice.beaconID,
                                 "time" to currDevice.time.toString(),
