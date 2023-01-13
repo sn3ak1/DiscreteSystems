@@ -105,7 +105,6 @@ class MainActivity : AppCompatActivity() {
 
         bleInstance.enableBluetooth()
         bleInstance.enableLog(true)
-//        val list  = mutableListOf<BleDevice>()
 
         fun getSignalFalloff(rssi: Int): Double {
             var signalFalloff = 3.0
@@ -160,8 +159,6 @@ class MainActivity : AppCompatActivity() {
                         if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null
                             && bleDevice.name.contains(dsUserAppBLENamePrefix, ignoreCase=false) ){
 
-                            val Tx_idx = 29 // The device trasmition power is on a 10th bit in ScanRecord array
-                            val device_Tx_val: Int = bleDevice.getScanRecord()[Tx_idx].toInt()
                             val currTime: Long = System.currentTimeMillis()
 
                             val rssi_to_meters: Double = (10.0).pow(((
@@ -179,6 +176,7 @@ class MainActivity : AppCompatActivity() {
                                 x = findViewById<EditText>(R.id.yBeaconCoordinate).text.toString().toDouble(),
                                 y = findViewById<EditText>(R.id.xBeaconCoordinate).text.toString().toDouble()
                             )
+
                             foundDevices.add(currDevice)
                             val instance = hashMapOf(
                                 "value" to currDevice.value_rssi,
@@ -196,23 +194,8 @@ class MainActivity : AppCompatActivity() {
                                 .document(currTime.toString()).
                                 set(instance)
 
-                            db.collection("Devices").document("devicesBluetooth").get().addOnSuccessListener { document ->
-                                if (document != null) {                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-
-                                    val devices = document.get("devices") as ArrayList<String>
-                                    if (!devices.contains(bleDevice.name )) {
-                                        devices.add(bleDevice.name )
-                                        db.collection("Devices").document("devicesBluetooth").update("devices", devices)
-                                    }
-                                } else {
-                                    Log.d(TAG, "No such document")
-                                }
-                            }.addOnFailureListener { exception ->
-                                Log.d(TAG, "get failed with ", exception)
-                            }
 //
                         }
-//                        list.add(bleDevice)
                     }
                     override fun onScanFinished(scanResultList: List<BleDevice>) {
                         var debugInfo = "test | ID:      | RSSI:      | DISTANCE (m):      \n"
