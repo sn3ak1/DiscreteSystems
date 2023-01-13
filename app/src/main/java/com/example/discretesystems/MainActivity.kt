@@ -54,6 +54,9 @@ class MainActivity : AppCompatActivity() {
     var handler: Handler = Handler()
     var runnable: Runnable? = null
     var delay = 1000
+
+    var dsUserAppBLENamePrefix = "DsClient";
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,13 +157,12 @@ class MainActivity : AppCompatActivity() {
                 bleInstance.scan(object : BleScanCallback() {
                     override fun onScanStarted(success: Boolean) {}
                     override fun onScanning(bleDevice: BleDevice) {
-                        if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null){
+                        if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null && bleDevice.name.contains(dsUserAppBLENamePrefix, ignoreCase=false) ){
                             val Tx_idx = 29 // The device trasmition power is on a 10th bit in ScanRecord array
                             val device_Tx_val: Int = bleDevice.getScanRecord()[Tx_idx].toInt()
                             val currTime: Long = System.currentTimeMillis()
 
                             val rssi_to_meters: Double = (10.0).pow(((
-
                                         -69.0 -(bleDevice.rssi))
                                         /(10.0 * getSignalFalloff(bleDevice.rssi))
                                     )
@@ -178,7 +180,6 @@ class MainActivity : AppCompatActivity() {
                             foundDevices.add(currDevice)
                             val instance = hashMapOf(
                                 "value" to currDevice.value_rssi,
-//                                "gps" to false,
                                 "roomID" to currDevice.roomID,
                                 "beaconID" to currDevice.beaconID,
                                 "time" to currDevice.time.toString(),
