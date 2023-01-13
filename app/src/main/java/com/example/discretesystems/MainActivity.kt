@@ -157,7 +157,9 @@ class MainActivity : AppCompatActivity() {
                 bleInstance.scan(object : BleScanCallback() {
                     override fun onScanStarted(success: Boolean) {}
                     override fun onScanning(bleDevice: BleDevice) {
-                        if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null && bleDevice.name.contains(dsUserAppBLENamePrefix, ignoreCase=false) ){
+                        if(seenDeviceNames.indexOf(bleDevice.name) == -1 && bleDevice.name != null
+                            && bleDevice.name.contains(dsUserAppBLENamePrefix, ignoreCase=false) ){
+
                             val Tx_idx = 29 // The device trasmition power is on a 10th bit in ScanRecord array
                             val device_Tx_val: Int = bleDevice.getScanRecord()[Tx_idx].toInt()
                             val currTime: Long = System.currentTimeMillis()
@@ -194,13 +196,13 @@ class MainActivity : AppCompatActivity() {
                                 .document(currTime.toString()).
                                 set(instance)
 
-                            db.collection("Devices").document("Bluetooth").get().addOnSuccessListener { document ->
+                            db.collection("Devices").document("devicesBluetooth").get().addOnSuccessListener { document ->
                                 if (document != null) {                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
 
                                     val devices = document.get("devices") as ArrayList<String>
                                     if (!devices.contains(bleDevice.name )) {
                                         devices.add(bleDevice.name )
-                                        db.collection("Devices").document("Bluetooth").update("devices", devices)
+                                        db.collection("Devices").document("devicesBluetooth").update("devices", devices)
                                     }
                                 } else {
                                     Log.d(TAG, "No such document")
